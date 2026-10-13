@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAI - Personal AI Chatbot</title>
+  <link rel="stylesheet" href="cai.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310a37f'><path d='M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 15h-2v-2h2zm0-4h-2V7h2z'/></svg>">
+</head>
+<body>
+  <div id="app" class="app-layout">
+    <!-- Sidebar Backdrop for Mobile -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+    <!-- Left Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a10 10 0 0 1 10 10c0 4.418-2.865 8.166-6.839 9.49.339-.774.539-1.63.539-2.54 0-3.314-2.686-6-6-6s-6 2.686-6 6c0 .91.2 1.766.539 2.54C3.865 20.166 1 16.418 1 12A10 10 0 0 1 12 2z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </div>
+          <span class="brand-name">CAI Studio</span>
+        </div>
+        <button id="collapseSidebarBtn" class="icon-btn tooltip" data-tooltip="Close sidebar" aria-label="Close sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="3" rx="2"/>
+            <path d="M9 3v18"/>
+            <path d="m14 9-3 3 3 3"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="sidebar-actions">
+        <button id="newChatBtn" class="btn btn-new-chat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span>New chat</span>
+        </button>
+
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input type="text" id="searchChatsInput" placeholder="Search conversations..." autocomplete="off">
+        </div>
+      </div>
+
+      <!-- Chat History List -->
+      <div class="chat-list-wrapper">
+        <div class="chat-list-header">
+          <span>Recent chats</span>
+        </div>
+        <div id="chatList" class="chat-list">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <div class="user-info">
+            <span class="user-name">Personal Workspace</span>
+            <span class="user-status" id="modelStatusIndicator">Google Gemini (Connected)</span>
+          </div>
+        </div>
+
+        <div class="footer-actions">
+          <button id="themeToggleBtn" class="icon-btn tooltip" data-tooltip="Toggle light/dark" aria-label="Toggle theme">
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+            </svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+            </svg>
+          </button>
+          <button id="settingsBtn" class="icon-btn tooltip" data-tooltip="Settings & API Key" aria-label="Open settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main id="main" class="main-area">
+      <!-- Top Navigation Header -->
+      <header class="top-nav">
+        <div class="nav-left">
+          <button id="openSidebarBtn" class="icon-btn tooltip" data-tooltip="Open sidebar" aria-label="Open sidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2"/>
+              <path d="M9 3v18"/>
+              <path d="m14 9 3 3-3 3"/>
+            </svg>
+          </button>
+
+          <!-- Model Switcher Pill -->
+          <div class="model-badge" id="modelBadge">
+            <span class="model-name" id="currentModelLabel">Gemini Flash</span>
+            <span class="model-badge-tag" id="currentModelTag">Live AI</span>
+          </div>
+        </div>
+
+        <div class="nav-center">
+          <span class="active-chat-title" id="topChatTitle">New Chat</span>
+        </div>
+
+        <div class="nav-right">
+          <button id="mobileNewChatBtn" class="icon-btn tooltip" data-tooltip="New chat" aria-label="New chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+          </button>
+          <button id="clearChatBtn" class="icon-btn tooltip" data-tooltip="Clear conversation" aria-label="Clear chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"/>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Messages Viewport -->
+      <div id="messagesContainer" class="messages-container">
+        <!-- Empty / Welcome Hero Screen -->
+        <div id="welcomeHero" class="welcome-hero">
+          <div class="hero-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="m4.93 4.93 4.24 4.24"/>
+              <path d="m14.83 9.17 4.24-4.24"/>
+              <path d="m14.83 14.83 4.24 4.24"/>
+              <path d="m9.17 14.83-4.24 4.24"/>
+              <circle cx="12" cy="12" r="4"/>
+            </svg>
+          </div>
+          <h1 class="hero-title">What can I help with today?</h1>
+          <p class="hero-subtitle">Ask questions, upload photos and documents, write code, or brainstorm ideas.</p>
+
+          <!-- Prompt Starter Cards -->
+          <div class="suggestion-grid">
+            <div class="suggestion-card" data-prompt="Analyze this uploaded image and describe its key elements in detail.">
+              <div class="card-icon">🖼️</div>
+              <div class="card-content">
+                <h4>Image & Photo Analysis</h4>
+                <p>Upload a picture or screenshot to extract text, inspect details, or ask questions.</p>
+              </div>
+            </div>
+            <div class="suggestion-card" data-prompt="Write a modern, interactive JavaScript web app with beautiful styling.">
+              <div class="card-icon">⚡</div>
+              <div class="card-content">
+                <h4>Code & Development</h4>
+                <p>Generate clean HTML, CSS, JavaScript, Python scripts, or debug complex code.</p>
+              </div>
+            </div>
+            <div class="suggestion-card" data-prompt="Summarize the key takeaways and actionable points from this attached document.">
+              <div class="card-icon">📄</div>
+              <div class="card-content">
+                <h4>Document & File Reader</h4>
+                <p>Attach text files, CSVs, or PDFs to summarize and extract insights.</p>
+              </div>
+            </div>
+            <div class="suggestion-card" data-prompt="Brainstorm 5 innovative project ideas combining AI and productivity.">
+              <div class="card-icon">💡</div>
+              <div class="card-content">
+                <h4>Brainstorm & Ideate</h4>
+                <p>Explore creative concepts, draft emails, business strategies, or content outlines.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Message List -->
+        <div id="messagesList" class="messages-list">
+          <!-- User and Assistant bubbles injected here -->
+        </div>
+
+        <!-- Scroll To Bottom Button -->
+        <button id="scrollToBottomBtn" class="scroll-bottom-btn" aria-label="Scroll to bottom">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M19 12l-7 7-7-7"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Bottom Floating Dock -->
+      <footer class="bottom-dock">
+        <div class="input-container">
+          <!-- Pending Attachment Tray -->
+          <div id="attachmentPreviewRack" class="attachment-preview-rack" style="display: none;">
+            <!-- Attachment chips/cards injected here -->
+          </div>
+
+          <!-- Main Input Controls -->
+          <div class="input-row">
+            <!-- Hidden Multi-file Input -->
+            <input type="file" id="fileInput" multiple accept="image/*,.pdf,.txt,.docx,.doc,.json,.csv,.md,.py,.js,.html,.css" style="display: none;">
+            
+            <button id="attachBtn" class="action-btn tooltip" data-tooltip="Attach photos or files" aria-label="Attach file">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+              </svg>
+            </button>
+
+            <!-- Auto-expanding Textarea -->
+            <textarea 
+              id="chatInput" 
+              placeholder="Ask CAI anything... (Paste photos or drag files here)" 
+              rows="1" 
+              autocomplete="off" 
+              spellcheck="true"
+            ></textarea>
+
+            <!-- Send / Stop Button -->
+            <button id="sendBtn" class="send-btn" aria-label="Send message" disabled>
+              <svg class="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 19V5M5 12l7-7 7 7"/>
+              </svg>
+              <svg class="stop-icon" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="6" width="12" height="12" rx="2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="input-disclaimer">
+          <span>CAI can make mistakes. Verify important information. Attachments are processed locally.</span>
+        </div>
+      </footer>
+    </main>
+
+    <!-- Drag & Drop Fullscreen Overlay -->
+    <div id="dragDropOverlay" class="drag-drop-overlay">
+      <div class="overlay-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <h3>Drop photos & files to attach</h3>
+        <p>Supports images (PNG, JPG, WebP), PDFs, Markdown, JSON, and code files</p>
+      </div>
+    </div>
+
+    <!-- Lightbox Modal for Full Image View -->
+    <div id="imageLightboxModal" class="modal lightbox-modal">
+      <div class="lightbox-backdrop" id="lightboxBackdrop"></div>
+      <div class="lightbox-content">
+        <button id="closeLightboxBtn" class="icon-btn lightbox-close" aria-label="Close image preview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+        <img id="lightboxImage" src="" alt="Full view preview">
+        <div class="lightbox-info">
+          <span id="lightboxFilename">image.png</span>
+          <a id="lightboxDownloadBtn" href="#" download="image.png" class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings & API Modal -->
+    <div id="settingsModal" class="modal settings-modal">
+      <div class="modal-backdrop" id="settingsBackdrop"></div>
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <h2>Settings & API Configuration</h2>
+          </div>
+          <button id="closeSettingsBtn" class="icon-btn" aria-label="Close settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="settings-nav">
+            <button class="settings-tab active" data-tab="tab-api">API Integration</button>
+            <button class="settings-tab" data-tab="tab-persona">System & Persona</button>
+            <button class="settings-tab" data-tab="tab-data">Data & History</button>
+          </div>
+
+          <!-- Tab 1: API Configuration -->
+          <div class="tab-pane active" id="tab-api">
+            <div class="form-group">
+              <label for="apiProviderSelect">AI Engine Provider</label>
+              <select id="apiProviderSelect" class="form-control">
+                <option value="gemini" selected>Google Gemini API (Active Key)</option>
+                <option value="openai">OpenAI Compatible (ChatGPT, Groq, Ollama, vLLM)</option>
+                <option value="anthropic">Anthropic Claude</option>
+                <option value="simulated">Built-in Interactive Simulator (Offline)</option>
+              </select>
+              <span class="field-hint">Google Gemini API key integrated and active. Fast responses with multimodal image understanding.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="apiKeyInput">API Key</label>
+              <div class="password-wrapper">
+                <input type="password" id="apiKeyInput" class="form-control" placeholder="sk-..." autocomplete="off">
+                <button type="button" id="toggleApiKeyVisibility" class="icon-btn field-action" aria-label="Toggle visibility">
+                  <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                    <path d="m9.88 9.88 4.24 4.24M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61M2 2l20 20"/>
+                  </svg>
+                </button>
+              </div>
+              <span class="field-hint">Keys are saved locally in your browser's private localStorage and are never sent anywhere else.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="apiModelInput">Model Name</label>
+              <input type="text" id="apiModelInput" class="form-control" placeholder="gpt-4o, gemini-1.5-pro, claude-3-5-sonnet...">
+            </div>
+
+            <div class="form-group">
+              <label for="apiEndpointInput">Custom Endpoint URL (Optional)</label>
+              <input type="text" id="apiEndpointInput" class="form-control" placeholder="https://api.openai.com/v1/chat/completions">
+              <span class="field-hint">Leave blank for default provider endpoint, or set your custom reverse proxy / Ollama local host.</span>
+            </div>
+          </div>
+
+          <!-- Tab 2: Persona & Instructions -->
+          <div class="tab-pane" id="tab-persona">
+            <div class="form-group">
+              <label for="systemPromptInput">System Instructions / AI Persona</label>
+              <textarea id="systemPromptInput" class="form-control" rows="5" placeholder="You are CAI, a helpful, brilliant, and precise personal AI assistant..."></textarea>
+              <span class="field-hint">Set the tone, rules, and preferences for your personal assistant.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="userNameInput">Your Display Name</label>
+              <input type="text" id="userNameInput" class="form-control" placeholder="User" value="User">
+            </div>
+          </div>
+
+          <!-- Tab 3: Data & Storage -->
+          <div class="tab-pane" id="tab-data">
+            <div class="data-actions-card">
+              <h4>Conversations Management</h4>
+              <p>Export your full conversation history to JSON, or wipe local chat data.</p>
+              <div class="button-row">
+                <button id="exportChatsBtn" class="btn btn-secondary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  Export Conversations (JSON)
+                </button>
+                <button id="clearAllChatsBtn" class="btn btn-danger">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18"/>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                  </svg>
+                  Delete All Conversations
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="cancelSettingsBtn" class="btn btn-secondary">Cancel</button>
+          <button id="saveSettingsBtn" class="btn btn-primary">Save Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <script src="cai.js"></script>
+</body>
+</html>
